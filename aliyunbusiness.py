@@ -39,9 +39,9 @@ def getReMiningCDN(client):
         response = client.do_action_with_exception(request);
 	reCDN = float(0);
 	for i in json.loads(response)["Data"]["Instances"]["Instance"]:
-		if i["RemainingAmountUnit"] == u"万次":
+		if i["RemainingAmountUnit"] == u"涓囨":
 			reCDN = reCDN + float(i["RemainingAmount"])*10000;
-		elif i["RemainingAmountUnit"] == u"亿次":
+		elif i["RemainingAmountUnit"] == u"浜挎":
 			reCDN = reCDN + float(i["RemainingAmount"])*100000000;
 		else:
 			reCDN = reCDN + float(i["RemainingAmount"])
