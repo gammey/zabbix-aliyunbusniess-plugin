@@ -67,7 +67,7 @@ def main():
 	except ServerException:
 		print "accessid or accesskey error.";
 	except KeyError:
-		print "unkown args.please input [accountBalance|reminingcdnflow|reminingcdn]"
+		print "unkown args.please input [accountbalance|reminingcdnflow|reminingcdn]"
 	
 
 if __name__ == '__main__':
