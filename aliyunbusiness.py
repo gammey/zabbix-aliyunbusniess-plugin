@@ -23,28 +23,30 @@ def getAccountBalance(client):
 
 def getReMiningCDNFlow(client):
 	request = QueryResourcePackageInstancesRequest.QueryResourcePackageInstancesRequest()
-	request.set_ProductCode('cdnflowbag');
+	request.set_ProductCode('dcdn');
 	response = client.do_action_with_exception(request);
-	unitKV = {"B":1,"KB":1024,"MB":1024*1024,"GB":1024*1024*1024,"TB":1024*1024*1024*1024};
+	unitKV = {"Byte":1,"KB":1024,"MB":1024*1024,"GB":1024*1024*1024,"TB":1024*1024*1024*1024};
 	reminingFlow = 0;
 	for i in json.loads(response)["Data"]["Instances"]["Instance"]:
-		flow = float(i["RemainingAmount"]);
-		unit = i["RemainingAmountUnit"];
-		reminingFlow = reminingFlow + unitKV[unit] * flow
+		if i["Remark"] == u"下行流量（中国大陆）":
+			flow = float(i["RemainingAmount"]);
+			unit = i["RemainingAmountUnit"];
+			reminingFlow = reminingFlow + unitKV[unit] * flow
 	return reminingFlow/1024/1024/1024;
 
 def getReMiningCDN(client):
 	request = QueryResourcePackageInstancesRequest.QueryResourcePackageInstancesRequest()
-        request.set_ProductCode('CDN');
+        request.set_ProductCode('dcdn');
         response = client.do_action_with_exception(request);
 	reCDN = float(0);
 	for i in json.loads(response)["Data"]["Instances"]["Instance"]:
-		if i["RemainingAmountUnit"] == u"万次":
-			reCDN = reCDN + float(i["RemainingAmount"])*10000;
-		elif i["RemainingAmountUnit"] == u"亿次":
-			reCDN = reCDN + float(i["RemainingAmount"])*100000000;
-		else:
-			reCDN = reCDN + float(i["RemainingAmount"])
+		if i["Remark"] == u"静态HTTPS请求包":
+			if i["RemainingAmountUnit"] == u"万次":
+				reCDN = reCDN + float(i["RemainingAmount"])*10000;
+			elif i["RemainingAmountUnit"] == u"亿次":
+				reCDN = reCDN + float(i["RemainingAmount"])*100000000;
+			elif i["RemainingAmountUnit"] == u"次 ":
+				reCDN = reCDN + float(i["RemainingAmount"])
 	return reCDN;
 		
 
@@ -65,7 +67,7 @@ def main():
 		arg = sys.argv[1];
 		print fDic[arg](client);
 	except ServerException:
-		print "accessid or accesskey error.";
+		print "accessid accesskey error or server time is not correct.";
 	except KeyError:
 		print "unkown args.please input [accountbalance|reminingcdnflow|reminingcdn]"
 	
